@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "srt-fuzzy-sync"
+version = "1.0.0"
+description = ""
+authors = ["colin <Colin_XKL@outlook.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "srt_fuzzy_sync" }]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pysrt = "^1.1.2"
+rapidfuzz = "^3.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
