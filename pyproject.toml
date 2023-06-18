@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{ include = "srt_fuzzy_sync" }]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 pysrt = "^1.1.2"
 rapidfuzz = "^3.1.1"
 

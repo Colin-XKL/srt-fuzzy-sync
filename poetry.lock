@@ -133,5 +133,5 @@ full = ["numpy"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.9"
-content-hash = "7e906e75efc0418ff4db9284d60370a34823d35e8a838c8e5a427a18dcf2cc22"
+python-versions = "^3.8"
+content-hash = "7a56c2fd774fb47a070352b8aaa08d51bc5ddb6e513c8a0ca1818107500f74e1"
