@@ -29,6 +29,8 @@ then specify the reference srt file , target srt file to be sync, and the output
 
 ```shell
 python3 ./main mysub/reference.srt mysub/no-synced.srt mysub/ouput.srt
+# for poetry, you may need to use `poetry run python3 ./main.py xxxx` to use the virtual env python
+
 ```
 
 then you can get the correctly synced srt file, now enjoy your shows!
@@ -37,15 +39,15 @@ then you can get the correctly synced srt file, now enjoy your shows!
 
 **Performance:**
 
-For a 25min episode, syncing two subtitles takes 0.3s on my M1 Mac mini.
+For a 25-min episode, syncing two subtitles takes 0.3s on my M1 Mac mini.
 
 **Sync subtitles in batch:**  
 In case you need this, here is a sample shell command you can sync many subtitles once in a time.
 
-(reference srt file name like "S01E01_ref.srt", target srt files "S01E01_old.srt", output srt files "S01E01_new.srt")
+(reference srt file name like "S01E01.eng.srt", target srt files "S01E01.zho.srt", output srt files "S01E01.new.srt")
 
 ```shell
-find . -type f -name "*_old.srt" -exec sh -c 'python3 ./main.py $(basename {}  _old.srt)_ref.srt {} $(basename {}  _old.srt)_new.srt  ' \;
+find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; poetry run python3 ./main.py "${f%.zho.srt}.eng.srt" "$f" "${f%.zho.srt}.new.srt" ' \;
 ```
 
 ## License
@@ -88,6 +90,26 @@ poetry source add --default mirrors https://pypi.tuna.tsinghua.edu.cn/simple/
 
 ```shell
 python3 ./main mysub/reference.srt mysub/no-synced.srt mysub/ouput.srt
+
+# 对于poetry, 可能需要用`poetry run python3 ./main.py xxxx`
+```
+
+## 更多信息
+
+**性能**
+
+本地测试中, 对一个25分钟长度的剧集的两个字幕进行对齐同步, 在我的M1 Mac Mini 耗时0.3s
+
+**批量处理字幕**
+
+以下是示例shell
+(参考字幕为"S01E01.eng.srt", 要处理的字幕为 "S01E01.zho.srt", 保存位置 "S01E01.new.srt")
+
+```shell
+find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; poetry run python3 ./main.py "${f%.zho.srt}.eng.srt" "$f" "${f%.zho.srt}.new.srt" ' \;
+
+# 转换完成后, 可以删除不需要的字幕文件, 然后使用 rename 命令批量修改文件后缀为zh
+rename 's/\.new\.srt/\.zh.srt/' ./*.srt
 ```
 
 ## 许可
