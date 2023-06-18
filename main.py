@@ -19,7 +19,10 @@ def is_matched(text_a: str, text_b: str, threshold: float = 0.9) -> bool:
 
 def text_clean(input_str: str) -> str:
     # Remove HTML or XML tags
-    cleaned = re.sub('<[^<]+?>', '', input_str)
+    cleaned = re.sub(r'<[^<]+?>', '', input_str)
+    # remove {} tags
+    cleaned = re.sub(r'{[^<]+?}', "", cleaned)
+
     # Convert to lower case
     cleaned = cleaned.lower()
 
@@ -53,7 +56,7 @@ def calc_match_result(ref_sub_seq: List[SubItem], target_sub_seq: List[SubItem])
     for indexI in range(0, len(ref_sub_seq)):
         for indexJ in range(last_matched_index_j, len(target_sub_seq)):
             if is_matched(ref_sub_seq[indexI].OriginalContent, target_sub_seq[indexJ].OriginalContent):
-                print("got matched")
+                # print("got matched")
                 # print(ref_sub_seq[indexI].OriginalContent)
                 # print(target_sub_seq[indexJ].OriginalContent)
                 match_item = MatchResult(
@@ -99,11 +102,18 @@ def align_seq(ref_sub_seq: List[SubItem], target_sub_seq: List[SubItem], match: 
 
 
 if __name__ == '__main__':
+    import sys
+
+    args = sys.argv
+    if len(args) != 4:
+        print("ERR: arg num error. expect 3 (reference srt, target to be synced srt, output srt file)")
+        sys.exit(-1)
+
     print('start')
     # set input file path
-    reference_sub = "./test-subs/ref.srt"
-    to_be_sync_sub = "test-subs/dual.srt"
-    output_path = "./test-subs/output.srt"
+    reference_sub = args[1]
+    to_be_sync_sub = args[2]
+    output_path = args[3]
     # read file
     ref = pysrt.open(reference_sub)
     target = pysrt.open(to_be_sync_sub)
@@ -127,3 +137,4 @@ if __name__ == '__main__':
     # output
     target.save(output_path, encoding='utf-8')
     print('done.')
+    print("new sub file saved to ", output_path)
