@@ -5,7 +5,6 @@ description = ""
 authors = ["colin <Colin_XKL@outlook.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "srt_fuzzy_sync" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
