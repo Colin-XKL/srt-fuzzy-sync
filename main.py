@@ -1,13 +1,8 @@
-import array
-import pprint
 import re
-import time
 from typing import List
 
 import pysrt
 from rapidfuzz import fuzz
-import numpy as np
-from dtw import dtw
 
 
 def text_similarity_calc(str_a, str_b):
