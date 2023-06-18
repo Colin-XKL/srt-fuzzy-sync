@@ -100,27 +100,21 @@ def align_seq(ref_sub_seq: List[SubItem], target_sub_seq: List[SubItem], match: 
 
 if __name__ == '__main__':
     print('start')
+    # set input file path
     reference_sub = "./test-subs/ref.srt"
-
     to_be_sync_sub = "test-subs/dual.srt"
-
     output_path = "./test-subs/output.srt"
-
+    # read file
     ref = pysrt.open(reference_sub)
     target = pysrt.open(to_be_sync_sub)
 
     ref_seq = [SubItem(content=item.text, time_stamp=item.start.ordinal) for item in ref]
-
     target_seq = [SubItem(content=item.text, time_stamp=item.start.ordinal) for item in target]
 
     match_result = calc_match_result(ref_seq, target_sub_seq=target_seq)
     result_target_time_seq = align_seq(ref_seq, target_seq, match_result)
 
-    print(result_target_time_seq)
-
     for index in range(len(target)):
-        print("shifted", result_target_time_seq[index] - target[index].start.ordinal)
-
         new_time_ordinal = result_target_time_seq[index]
 
         old_time_start = target[index].start
@@ -130,6 +124,6 @@ if __name__ == '__main__':
 
         target[index].start = new_time_start
         target[index].end = new_time_end
-
+    # output
     target.save(output_path, encoding='utf-8')
     print('done.')
