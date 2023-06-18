@@ -42,7 +42,7 @@ For a 25min episode, syncing two subtitles takes 0.3s on my M1 Mac mini.
 **Sync subtitles in batch:**  
 In case you need this, here is a sample shell command you can sync many subtitles once in a time.
 
-(reference srt file name like "S01E01_ref.srt, target srt files "S01E01_old.srt, output srt files "S01E01_new.srt")
+(reference srt file name like "S01E01_ref.srt", target srt files "S01E01_old.srt", output srt files "S01E01_new.srt")
 
 ```shell
 find . -type f -name "*_old.srt" -exec sh -c 'python3 ./main.py $(basename {}  _old.srt)_ref.srt {} $(basename {}  _old.srt)_new.srt  ' \;
