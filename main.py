@@ -4,6 +4,9 @@ from typing import List
 import pysrt
 from rapidfuzz import fuzz
 
+MIN_VALID_STR_LEN = 4
+MAX_VALID_SUB_STR_LEN_RATIO = 4
+
 
 def text_similarity_calc(str_a, str_b):
     return fuzz.partial_ratio(str_a, str_b)
@@ -12,6 +15,13 @@ def text_similarity_calc(str_a, str_b):
 def is_matched(text_a: str, text_b: str, threshold: float = 0.9) -> bool:
     str_a = text_clean(text_a)
     str_b = text_clean(text_b)
+
+    # ignore strings that are too short
+    if min(len(str_a), len(str_b), len(str_a.split(" ")), len(str_b.split(" "))) < MIN_VALID_STR_LEN:
+        return False
+    if (max(len(str_a), len(str_b)) / min(len(str_a), len(str_b))) > MAX_VALID_SUB_STR_LEN_RATIO:
+        return False
+
     normalized_score = (text_similarity_calc(str_a, str_b)) / 100
     # print("score:", normalized_score)
     return normalized_score > threshold
@@ -27,6 +37,7 @@ def text_clean(input_str: str) -> str:
     cleaned = cleaned.lower()
 
     cleaned.replace("\n", " ").replace("  ", " ")
+
     return cleaned.strip()
 
 
@@ -123,6 +134,10 @@ if __name__ == '__main__':
 
     match_result = calc_match_result(ref_seq, target_sub_seq=target_seq)
     result_target_time_seq = align_seq(ref_seq, target_seq, match_result)
+
+    print(f"INFO: ref sub: {len(ref)} items")
+    print(f"INFO: target sub: {len(target)} items")
+    print("INFO: matched ", len(match_result))
 
     for index in range(len(target)):
         new_time_ordinal = result_target_time_seq[index]
