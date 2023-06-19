@@ -137,7 +137,12 @@ if __name__ == '__main__':
 
     print(f"INFO: ref sub: {len(ref)} items")
     print(f"INFO: target sub: {len(target)} items")
-    print("INFO: matched ", len(match_result))
+    print(f"INFO: matched: {len(match_result)} items")
+
+    if (len(match_result)) < 0.5 * (min(len(ref), len(target))):
+        print(
+            "WARNING: "
+            "not enough matched subtitles, make sure the reference and the target sub are for the same episode.")
 
     for index in range(len(target)):
         new_time_ordinal = result_target_time_seq[index]
