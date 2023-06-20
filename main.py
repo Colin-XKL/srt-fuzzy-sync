@@ -2,6 +2,7 @@ import re
 from typing import List
 
 import pysrt
+from pysrt import SubRipItem
 from rapidfuzz import fuzz
 
 MIN_VALID_STR_LEN = 4
@@ -112,6 +113,13 @@ def align_seq(ref_sub_seq: List[SubItem], target_sub_seq: List[SubItem], match: 
     return ret_target_time_seq
 
 
+def get_time_stamp(srt_item: SubRipItem):
+    """
+    get time stamp for srt item, for sorting
+    """
+    return srt_item.start.ordinal
+
+
 if __name__ == '__main__':
     import sys
 
@@ -128,6 +136,10 @@ if __name__ == '__main__':
     # read file
     ref = pysrt.open(reference_sub)
     target = pysrt.open(to_be_sync_sub)
+
+    # sort srt
+    ref.sort(key=get_time_stamp)
+    target.sort(key=get_time_stamp)
 
     ref_seq = [SubItem(content=item.text, time_stamp=item.start.ordinal) for item in ref]
     target_seq = [SubItem(content=item.text, time_stamp=item.start.ordinal) for item in target]
