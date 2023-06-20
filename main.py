@@ -101,15 +101,20 @@ def align_seq(ref_sub_seq: List[SubItem], target_sub_seq: List[SubItem], match: 
 
         for index_k in range(target_seq_last_processed_index, index_j):
             t = target_sub_seq[index_k].TimeStamp
-
             percent = (t - old_time_window_start) / old_time_window_len
-
             new_t = new_time_window_len * percent + new_time_window_start
-
             ret_target_time_seq[index_k] = new_t
 
         ref_seq_last_processed_index = index_i
         target_seq_last_processed_index = index_j
+
+    last_offset = ref_sub_seq[ref_seq_last_processed_index].TimeStamp - target_sub_seq[
+        target_seq_last_processed_index].TimeStamp
+
+    if target_seq_last_processed_index < len(ret_target_time_seq) - 1:
+        for index_k in range(target_seq_last_processed_index, len(ret_target_time_seq)):
+            ret_target_time_seq[index_k] += last_offset
+
     return ret_target_time_seq
 
 
