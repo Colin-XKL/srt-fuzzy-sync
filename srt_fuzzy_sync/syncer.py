@@ -1,12 +1,32 @@
 import re
 from typing import List
 
+import click as click
 import pysrt
 from pysrt import SubRipItem
 from rapidfuzz import fuzz
 
 MIN_VALID_STR_LEN = 4
 MAX_VALID_SUB_STR_LEN_RATIO = 4
+
+
+class MatchResult:
+    refSeqIndex: int
+    targetSeqIndex: int
+
+    def __init__(self, ref_seq_index, target_seq_index):
+        self.refSeqIndex = ref_seq_index
+        self.targetSeqIndex = target_seq_index
+
+
+class SubItem:
+    # Index: int
+    TimeStamp: float
+    OriginalContent: str
+
+    def __init__(self, time_stamp, content: str):
+        self.TimeStamp = time_stamp
+        self.OriginalContent = content
 
 
 def text_similarity_calc(str_a, str_b):
@@ -40,25 +60,6 @@ def text_clean(input_str: str) -> str:
     cleaned.replace("\n", " ").replace("  ", " ")
 
     return cleaned.strip()
-
-
-class MatchResult:
-    refSeqIndex: int
-    targetSeqIndex: int
-
-    def __init__(self, ref_seq_index, target_seq_index):
-        self.refSeqIndex = ref_seq_index
-        self.targetSeqIndex = target_seq_index
-
-
-class SubItem:
-    # Index: int
-    TimeStamp: float
-    OriginalContent: str
-
-    def __init__(self, time_stamp, content: str):
-        self.TimeStamp = time_stamp
-        self.OriginalContent = content
 
 
 def calc_match_result(ref_sub_seq: List[SubItem], target_sub_seq: List[SubItem]) -> List[MatchResult]:
@@ -125,42 +126,35 @@ def get_time_stamp(srt_item: SubRipItem):
     return srt_item.start.ordinal
 
 
-if __name__ == '__main__':
-    import sys
+@click.group()
+def cli():
+    pass
 
-    args = sys.argv
-    if len(args) != 4:
-        print("ERR: arg num error. expect 3 (reference srt, target to be synced srt, output srt file)")
-        sys.exit(-1)
 
-    print('start')
-    # set input file path
-    reference_sub = args[1]
-    to_be_sync_sub = args[2]
-    output_path = args[3]
+@cli.command()
+@click.option("-r", "--reference_sub", type=str, required=True, help="reference srt sub file path")
+@click.option("-t", "--to_be_sync_sub", type=str, required=True, help="target to be syned srt sub file path")
+@click.option("-o", "--output_path", type=str, required=True, help="output srt file path")
+def run_sync(reference_sub: str,
+             to_be_sync_sub: str,
+             output_path: str):
     # read file
     ref = pysrt.open(reference_sub)
     target = pysrt.open(to_be_sync_sub)
-
     # sort srt
     ref.sort(key=get_time_stamp)
     target.sort(key=get_time_stamp)
-
     ref_seq = [SubItem(content=item.text, time_stamp=item.start.ordinal) for item in ref]
     target_seq = [SubItem(content=item.text, time_stamp=item.start.ordinal) for item in target]
-
     match_result = calc_match_result(ref_seq, target_sub_seq=target_seq)
     result_target_time_seq = align_seq(ref_seq, target_seq, match_result)
-
     print(f"INFO: ref sub: {len(ref)} items")
     print(f"INFO: target sub: {len(target)} items")
     print(f"INFO: matched: {len(match_result)} items")
-
     if (len(match_result)) < 0.5 * (min(len(ref), len(target))):
         print(
             "WARNING: "
             "not enough matched subtitles, make sure the reference and the target sub are for the same episode.")
-
     for index in range(len(target)):
         new_time_ordinal = result_target_time_seq[index]
 

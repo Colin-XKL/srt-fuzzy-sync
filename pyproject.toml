@@ -5,12 +5,19 @@ description = ""
 authors = ["colin <Colin_XKL@outlook.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "srt_fuzzy_sync" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 pysrt = "^1.1.2"
 rapidfuzz = "^3.1.1"
+click = "^8.1.6"
 
+#[project.scripts]
+#srt-fuzzy-sync = "srt_fuzzy_sync.syncer:cli"
+
+[tool.poetry.scripts]
+srt-fuzzy-sync = "srt_fuzzy_sync.syncer:cli"
 
 [build-system]
 requires = ["poetry-core"]
