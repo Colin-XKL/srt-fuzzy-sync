@@ -1,6 +1,10 @@
 # srt-fuzzy-sync
 
+English | [中文说明](https://github.com/Colin-XKL/srt-fuzzy-sync#srt-fuzzy-sync-%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E)
+
 This is a simple subtitle sync tool, use a reference srt file to make another one sync correctly with the audio.
+srt-fuzzy-sync 是一个简单的同步srt字幕的工具, 通过指定一个与音轨匹配的参考字幕文件, 来将另一个未同步的字幕进行匹配,
+时间轴修正, 使得其可以与音轨正确对齐.
 
 **Common use case:**
 
@@ -13,24 +17,27 @@ It uses fuzzy sub string matching for find the match, and shift the subtitles.
 
 ## Usage
 
-first clone the repo. enter the directory.
-
-ensure you have python3 installed. tested on python 3.9, but all python>=3.8 should works fine.
+Ensure you have python3 installed. tested on python 3.9, but all python>=3.8 should works fine.
 
 ```shell
 # use pip 
-python -m pip install .
-
-# or you can use poetry
-poetry install
+pip install srt-fuzzy-sync
 ```
 
 then specify the reference srt file , target srt file to be sync, and the output file in cli args.
 
 ```shell
-python3 ./main mysub/reference.srt mysub/no-synced.srt mysub/ouput.srt
-# for poetry, you may need to use `poetry run python3 ./main.py xxxx` to use the virtual env python
+srt-fuzzy-sync run-sync -r mysub/reference.srt -t mysub/not-synced.srt -o mysub/ouput.srt
 
+# manual available via `--help`
+srt-fuzzy-sync run-sync --help
+#Usage: srt-fuzzy-sync run-sync [OPTIONS]
+#
+#Options:
+#  -r, --reference_sub TEXT   reference srt sub file path  [required]
+#  -t, --to_be_sync_sub TEXT  target to be syned srt sub file path  [required]
+#  -o, --output_path TEXT     output srt file path  [required]
+#  --help                     Show this message and exit.
 ```
 
 then you can get the correctly synced srt file, now enjoy your shows!
@@ -47,7 +54,7 @@ In case you need this, here is a sample shell command you can sync many subtitle
 (reference srt file name like "S01E01.eng.srt", target srt files "S01E01.zho.srt", output srt files "S01E01.new.srt")
 
 ```shell
-find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; poetry run python3 ./main.py "${f%.zho.srt}.eng.srt" "$f" "${f%.zho.srt}.new.srt" ' \;
+find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; srt-fuzzy-sync run-sync -r "${f%.zho.srt}.eng.srt" -t "$f" -o "${f%.zho.srt}.new.srt" ' \;
 ```
 
 ## License
@@ -68,30 +75,32 @@ srt-fuzzy-sync 是一个简单的同步srt字幕的工具, 通过指定一个与
 
 ## 使用说明
 
-克隆本项目, 进入项目根目录
-
-确保已经安装了Python3 的环境. 本机Python 3.9 测试没问题. 理论上来说Python>=3.8都可以正常运行
+确保已经安装了 Python3 的环境. 本机Python 3.9 测试没问题. 理论上来说Python>=3.8都可以正常运行
 
 ```shell
-# 使用pip 安装依赖
-python -m pip install .
-# 或者可以使用 poetry
-poetry install
+# use pip 
+pip install srt-fuzzy-sync
 
 # 如果身在墙内安装速度太慢, 可以修改 pypi 镜像源. 
-
 # for pip
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-# for poetry
-poetry source add --default mirrors https://pypi.tuna.tsinghua.edu.cn/simple/
+
 ```
 
 然后通过命令行调用, 指定要参考的srt字幕文件, 要同步的srt字幕文件, 输出文件位置即可
 
 ```shell
-python3 ./main mysub/reference.srt mysub/no-synced.srt mysub/ouput.srt
+srt-fuzzy-sync run-sync -r mysub/reference.srt -t mysub/not-synced.srt -o mysub/ouput.srt
 
-# 对于poetry, 可能需要用`poetry run python3 ./main.py xxxx`
+# 获取帮助可使用 `--help`
+srt-fuzzy-sync run-sync --help
+#Usage: srt-fuzzy-sync run-sync [OPTIONS]
+#
+#Options:
+#  -r, --reference_sub TEXT   reference srt sub file path  [required]  , 即参考字幕
+#  -t, --to_be_sync_sub TEXT  target to be syned srt sub file path  [required], 即要同步的字幕
+#  -o, --output_path TEXT     output srt file path  [required], 保存文件的位置
+#  --help                     Show this message and exit.
 ```
 
 ## 更多信息
@@ -106,7 +115,7 @@ python3 ./main mysub/reference.srt mysub/no-synced.srt mysub/ouput.srt
 (参考字幕为"S01E01.eng.srt", 要处理的字幕为 "S01E01.zho.srt", 保存位置 "S01E01.new.srt")
 
 ```shell
-find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; poetry run python3 ./main.py "${f%.zho.srt}.eng.srt" "$f" "${f%.zho.srt}.new.srt" ' \;
+find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; srt-fuzzy-sync run-sync -r "${f%.zho.srt}.eng.srt" -t "$f" -o "${f%.zho.srt}.new.srt" ' \;
 
 # 转换完成后, 可以删除不需要的字幕文件, 然后使用 rename 命令批量修改文件后缀为zh
 rename 's/\.new\.srt/\.zh.srt/' ./*.srt
