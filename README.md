@@ -8,9 +8,9 @@ srt-fuzzy-sync 是一个简单的同步srt字幕的工具, 通过指定一个与
 
 **Common use case:**
 
-- two subtitles in the same language  (srt A: language A , srt B in language A )
+- two subtitles in the same language  (srtA in language A , srtB in language A )
 - or use a synced single
-  language subtitle to make another dual language subtitle sync correctly. ( srt A in language A , srt B in language
+  language subtitle to make another dual language subtitle sync correctly. ( srtA in language A , srtB in language
   A&B)
 
 It uses fuzzy sub string matching for find the match, and shift the subtitles.
@@ -120,6 +120,45 @@ find ../Season\ 28/ -type f -name "*.zho.srt" -exec bash -c 'f="{}"; srt-fuzzy-s
 # 转换完成后, 可以删除不需要的字幕文件, 然后使用 rename 命令批量修改文件后缀为zh
 rename 's/\.new\.srt/\.zh.srt/' ./*.srt
 ```
+
+为了更方便使用和维护, 也可以使用更简洁的shell脚本. 示例如下:
+```bash
+#!/bin/bash
+
+# 设置输入目录
+input_dir="/data/media/Loki_S01"
+
+# 遍历目录中的所有 MKV 文件, 如果要处理的是mp4 文件, 把下面所有的mkv 替换为mp4
+for mkv_file in "$input_dir"/*.mkv; do
+    # 获取文件名（不带扩展名）
+    base_name=$(basename "$mkv_file" .mkv)
+
+    # 定义参考字幕和待修正字幕的路径
+   
+    # 对于一个视频文件 video.mkv
+    # 这里假设所有的参考字幕格式为video_ref.srt
+    ref_subtitle="$input_dir/${base_name}_ref.srt" 
+    # 假设待对齐的文件为 video_nosync.srt
+    nosync_subtitle="$input_dir/${base_name}_nosync.srt"
+    # 设定新文件为 video_new.srt
+    output_subtitle="$input_dir/${base_name}_new.srt"
+
+    # 检查参考字幕和待修正字幕是否存在
+    if [[ -f "$ref_subtitle" && -f "$nosync_subtitle" ]]; then
+        # 调用第三方工具修正字幕
+        srt-fuzzy-sync run-sync -r "$ref_subtitle" -t "$nosync_subtitle" -o "$output_subtitle"
+        echo "Processed: $mkv_file -> $output_subtitle"
+    else
+        echo "Missing subtitles for: $mkv_file"
+    fi
+done
+```
+使用说明
+将上面的脚本保存为 `fix_subtitles.sh`。
+确保脚本具有可执行权限，可以通过以下命令设置：
+`chmod +x fix_subtitles.sh`
+运行脚本：
+`bash ./fix_subtitles.sh`
 
 ## 许可
 
